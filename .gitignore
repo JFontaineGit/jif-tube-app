@@ -1,0 +1,13 @@
+# Entorno virtual
+.venv/
+
+# Archivos generados por uv
+uv.lock
+.python-version
+
+
+# Archivos temporales de Python
+__pycache__/
+*.py[cod]
+*$py.class
+storage/
