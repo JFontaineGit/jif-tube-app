@@ -74,6 +74,7 @@ class FYPModel(nn.Module):
             total_loss = []
             for data, target in dataloader:
                 out = self(data)
+                out = th.max(out, 1)[1]
                 loss = criterion(out, target)
                 total_loss.append(loss.item())
                 loss.backward()
