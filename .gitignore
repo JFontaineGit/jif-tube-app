@@ -1,5 +1,7 @@
 # Entorno virtual
 .venv/
+.env
+
 
 # Archivos generados por uv
 uv.lock

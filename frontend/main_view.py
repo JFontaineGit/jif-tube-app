@@ -1,10 +1,84 @@
+from googleapiclient.discovery import build
 import flet as ft
+import pandas as pd
+
+def obtener_info_video_app(api_key, max_results=5):    
+    # Crear cliente
+    youtube = build('youtube', 'v3', developerKey=api_key)
+
+    # Request para obtener videos populares
+    request = youtube.videos().list(
+        part="snippet,statistics,contentDetails",
+        chart="mostPopular",
+        
+        maxResults=max_results,
+        regionCode="US",  # Puedes cambiar la región si lo deseas
+        videoCategoryId="10" # Music
+    )
+    response = request.execute()
+
+    # Verificamos que haya datos
+    if not response['items']:
+        print("No se encontraron videos populares")
+        return []
+
+    videos_info = []
+
+    for video in response['items']:
+        datos_app = {
+            "title": video['snippet'].get('title', ''),
+            "thumbnail": video['snippet']['thumbnails']['high']['url'],
+            "channel_title": video['snippet'].get('channelTitle', ''),
+            "published_at": video['snippet'].get('publishedAt', ''),
+            "duration": video['contentDetails'].get('duration', 'PT0M0S'),
+            "view_count": int(video['statistics'].get('viewCount', 0)),
+            "like_count": int(video['statistics'].get('likeCount', 0)),
+        }
+        videos_info.append(datos_app)
+    
+    return videos_info
+
+api_key = "AIzaSyDhUFUrs5MbqkG_6RaRIWhIFWcyOEK8qhE"
+
+res = obtener_info_video_app(api_key, max_results=10)
+    
+df = pd.DataFrame(res)
+
+print(df)
 
 # User Interface responsive
 class UI:
     def __init__(self, page: ft.Page):
         self.page = page
+    
+    def songs_list(self):
         
+        self.songs_list = ft.GridView(
+            expand=True,child_aspect_ratio=1.65,
+            horizontal=True,
+        )
+        
+        for index, row in df.iterrows():
+            song_card = ft.Column(
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                controls=[
+                    ft.Container(
+                        expand=9,
+                        border_radius=12,
+                        image_fit=ft.ImageFit.FILL,
+                        image_src=row['thumbnail'],
+                    ),
+                    ft.Text(row['title'], weight=ft.FontWeight.BOLD),
+                    #ft.Text(row['channel_title']),
+                    #ft.Text(row['published_at']),
+                    #ft.Text(f"Views: {row['view_count']}"),
+                    #ft.Text(f"Likes: {row['like_count']}"),
+                ]
+            )
+            self.songs_list.controls.append(song_card)
+        
+        return self.songs_list
+           
     def build_fab(self):
         return ft.FloatingActionButton(
             icon=ft.icons.SEARCH,
@@ -17,6 +91,15 @@ class UI:
     def build_ui(self):
         return ft.Stack(
             controls=[
+                ft.Row(
+                    controls=[
+                        ft.Text(
+                            "Quick a song",
+                            size=14
+                        )
+                    ]
+                ),
+                self.songs_list(),
                 ft.Container(
                     content=self.build_fab(),
                     alignment=ft.alignment.bottom_right,
@@ -85,8 +168,8 @@ class Sidebar:
         return ft.Container(
             width=130,
             height=self.page.height,
-            margin=ft.margin.only(top=-12, bottom=-15, left=-15),
-            border=ft.border.all(0.5, "white70"),
+            margin=ft.margin.only(top=-10, bottom=-8, left=-15),
+            #border=ft.border.all(0.5, "white70"),
             padding=ft.padding.only(top=35, left=20, right=20),
             clip_behavior=ft.ClipBehavior.HARD_EDGE,
             gradient=ft.RadialGradient(
@@ -105,7 +188,7 @@ class Sidebar:
                     ft.Container(expand=True), 
                     ft.Container(
                         content=settings_nav_rail,              
-                        height=80,
+                        height=100,
                     )  
                 ],
                 expand=True,

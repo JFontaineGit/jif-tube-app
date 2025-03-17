@@ -9,7 +9,12 @@ dependencies = [
     "flet-desktop>=0.27.6",
     "pandas>=2.2.3",
     "torch>=2.6.0",
-    "torchvision>=0.21.0",
-    "torchaudio>=2.6.0",
+    "torchvision>=0.21.0", #sacar
+    "torchaudio>=2.6.0", #sacar
     "polars>=1.25.2",
+    "google-api-python-client>=2.164.0",
+    "faker>=37.0.0", #sacar
+    "rich>=13.9.4", #sacar
+    "websockets>=15.0.1",
+    "uvicorn>=0.34.0",
 ]
