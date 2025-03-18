@@ -63,10 +63,10 @@ class UI:
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 controls=[
                     ft.Container(
-                        expand=9,
-                        border_radius=12,
-                        image_fit=ft.ImageFit.FILL,
-                        image_src=row['thumbnail'],
+                        expand=True,
+                        content=ft.Image(src=row['thumbnail'], fit=ft.ImageFit.FILL),
+                        #width=150,
+                        #height=150,
                     ),
                     ft.Text(row['title'], weight=ft.FontWeight.BOLD),
                     #ft.Text(row['channel_title']),
